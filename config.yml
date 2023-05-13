@@ -1,0 +1,14 @@
+Not-While-Using: '&cYou can not do this while you are using a Ritual!'
+No-Create-Perms: '&cYou do not have permission to create rituals!'
+No-Use-Perms: '&cYou do not have permission to use rituals!'
+No-Use-Other-Perms: '&cYou do not have permission to use rituals not owned by you!'
+No-Endereye-Travel-Perms: '&cYou do not have permission to fast travel!'
+No-Ritual-Travel: '&cYou do not have any rituals to travel to!'
+Hit-Creation-Limit: '&cYou have the max number of rituals! You must remove one first.'
+Already-Active: '&cThis ritual is already active!'
+Already-Using: '&cYou can only use one ritual at a time!'
+Deactivated-Ritual: '&cSuccessfully deactivated ritual'
+Removed-Ritual: '&cSuccessfully removed ritual'
+Ritual-Timeout: 20 # in seconds
+Teleport-Delay: 6 # in seconds
+Debug: false

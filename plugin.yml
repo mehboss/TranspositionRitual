@@ -1,0 +1,6 @@
+name: TranspositionRitual
+version: 1.0
+api-version: 1.18
+main: me.mehboss.ritual.Main
+author: mehboss
+description: A custom coded Ritual teleport plugin inspired by Perasha and requested by KittyKit
