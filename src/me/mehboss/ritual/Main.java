@@ -31,9 +31,6 @@ public class Main extends JavaPlugin {
 	private static Main instance;
 	boolean debug = false;
 
-	Plugin customRecipes;
-	CustomRecipes recipes;
-
 	NetworkManager networks = new NetworkManager();
 	HashMap<Location, Ritual> rituals = new HashMap<Location, Ritual>();
 	HashMap<UUID, PlayerRitual> owner = new HashMap<UUID, PlayerRitual>();
@@ -66,9 +63,6 @@ public class Main extends JavaPlugin {
 		// sets to active state
 		// sets owner
 
-		customRecipes = getServer().getPluginManager().getPlugin("CustomRecipes");
-		useCustomRecipe();
-
 		int pluginId = 18301;
 		Metrics metrics = new Metrics(this, pluginId);
 		metrics.addCustomChart(new Metrics.MultiLineChart("players_and_servers", new Callable<Map<String, Integer>>() {
@@ -86,14 +80,6 @@ public class Main extends JavaPlugin {
 	@Override
 	public void onDisable() {
 		saveRituals();
-	}
-
-	public void useCustomRecipe() {
-		if (customRecipes != null) {
-			recipes = new CustomRecipes();
-		} else {
-			getLogger().severe("Not utilizing CustomRecipes.. skipping.");
-		}
 	}
 
 	public void saveCustomYml(FileConfiguration ymlConfig, File ymlFile) {
