@@ -24,8 +24,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import me.mehboss.recipe.CustomRecipes;
-
 public class Main extends JavaPlugin {
 
 	private static Main instance;
@@ -58,7 +56,6 @@ public class Main extends JavaPlugin {
 		initCustomYml();
 
 		importRituals();
-		checkDebug();
 		// loads in rituals (center of block) from rituals config.
 		// sets to active state
 		// sets owner
@@ -95,10 +92,6 @@ public class Main extends JavaPlugin {
 
 			}
 		}
-	}
-
-	public HashMap<String, ItemStack> getCustomItem(String identifier) {
-		return CustomRecipes.getCustomItem();
 	}
 
 	public void initCustomYml() {
@@ -193,20 +186,6 @@ public class Main extends JavaPlugin {
 				writer.close();
 			} catch (IOException e) {
 				Bukkit.getServer().getLogger().warning("An error occurred while writing to the log! IOException");
-			}
-		}
-	}
-
-	public void checkDebug() {
-		if (debug) {
-			debugFile = new File(Bukkit.getServer().getPluginManager().getPlugin("ColorMe").getDataFolder(),
-					"debug.log");
-			if (!debugFile.exists()) {
-				try {
-					debugFile.createNewFile();
-				} catch (IOException e) {
-					Bukkit.getServer().getLogger().warning("Failed to create the debug.log! IOException");
-				}
 			}
 		}
 	}

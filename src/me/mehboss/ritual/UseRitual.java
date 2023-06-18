@@ -110,6 +110,9 @@ public class UseRitual implements Listener {
 				}
 			}
 
+			p.sendMessage(Main.getInstance().getConfig().getString("Teleporting").replaceAll("%seconds%",
+					String.valueOf(Main.getInstance().getConfig().getInt("Teleport-Delay"))));
+			
 			spawnEnchantmentParticles(nearbyPlayers, teleportLoc, () -> {
 				plugin.teleportEntities(teleportLoc, difference, p);
 				runLater(newRitual, p, 1L);

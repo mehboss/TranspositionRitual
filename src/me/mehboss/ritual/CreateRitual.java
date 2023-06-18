@@ -1,6 +1,7 @@
 package me.mehboss.ritual;
 
 import java.util.HashMap;
+import java.util.Optional;
 import java.util.UUID;
 import org.bukkit.Color;
 import org.bukkit.Location;
@@ -30,12 +31,25 @@ public class CreateRitual implements Listener {
 
 		ItemStack itemStack = item.getItemStack();
 		Material type = itemStack.getType();
+		Material newMaterial = null;
 		// convert to itemstack
 
-		if (type != Material.AMETHYST_SHARD && type != Material.ENDER_PEARL)
-			return;
+		for (String material : Main.getInstance().getConfig().getStringList("Drop-Item")) {
+			Optional<XMaterial> rawMaterial = XMaterial.matchXMaterial(material);
+
+			if (!rawMaterial.isPresent())
+				continue;
+
+			if (type == rawMaterial.get().parseMaterial()) {
+				newMaterial = rawMaterial.get().parseMaterial();
+				break;
+			}
+		}
 		// get material
 
+		if (newMaterial == null)
+			return;
+		
 		plugin.checkGround(item, (landedLocation) -> {
 			handleLandedLocation(p, landedLocation, item);
 		});
@@ -113,6 +127,14 @@ public class CreateRitual implements Listener {
 			return;
 		}
 
+		if (playerRitual().get(ritual.getOwner().getUniqueId()).getRitualCenters().isEmpty()
+				|| (ritual.hasNetwork() && getAllNetworks().getRitualsFromNetwork(ritual.getNetwork()).size() <= 1)) {
+			sendMessage(p.getPlayer(), "No-Ritual-Travel");
+			p.setCancelled(true);
+			return;
+		}
+
+		sendMessage(p.getPlayer(), "Activate-Ritual");
 		ritual.setActive(true);
 		ritual.setUser(p.getPlayer());
 
@@ -151,6 +173,10 @@ public class CreateRitual implements Listener {
 
 	HashMap<UUID, PlayerRitual> playerRitual() {
 		return Main.getInstance().owner;
+	}
+
+	NetworkManager getAllNetworks() {
+		return Main.getInstance().networks;
 	}
 
 	void sendMessage(Player p, String configPath) {
