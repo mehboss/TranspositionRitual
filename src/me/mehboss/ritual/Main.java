@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.Callable;
+import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -20,14 +21,18 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.Plugin;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public class Main extends JavaPlugin {
+public class Main extends JavaPlugin implements Listener {
 
 	private static Main instance;
 	boolean debug = false;
+
+	Boolean uptodate = true;
+	String newupdate = null;
 
 	NetworkManager networks = new NetworkManager();
 	HashMap<Location, Ritual> rituals = new HashMap<Location, Ritual>();
@@ -44,6 +49,7 @@ public class Main extends JavaPlugin {
 		RitualManager rm = new RitualManager(new LocationManager());
 		instance = this;
 
+		Bukkit.getPluginManager().registerEvents(this, this);
 		Bukkit.getPluginManager().registerEvents(rm, this);
 		Bukkit.getPluginManager().registerEvents(new UseRitual(rm), this);
 		Bukkit.getPluginManager().registerEvents(new CreateRitual(rm), this);
@@ -72,6 +78,23 @@ public class Main extends JavaPlugin {
 				return valueMap;
 			}
 		}));
+
+		new UpdateChecker(this, 110584).getVersion(version -> {
+
+			newupdate = version;
+
+			if (getDescription().getVersion().equals(version)) {
+				getLogger().log(Level.INFO, "Checking for updates..");
+				getLogger().log(Level.INFO,
+						"We are all up to date with the latest version. Thank you for using teleportation rituals :)");
+			} else {
+				getLogger().log(Level.INFO, "Checking for updates..");
+				getLogger().log(Level.WARNING,
+						"An update has been found! This could be bug fixes or additional features. Please update TP-Rituals at https://www.spigotmc.org/resources/%E2%96%BA%E2%96%BA-teleportation-rituals-1-8-x-1-20-x-teleporting-rituals-networking-system-%E2%97%84%E2%97%84.110584/");
+				uptodate = false;
+
+			}
+		});
 	}
 
 	@Override
@@ -104,6 +127,9 @@ public class Main extends JavaPlugin {
 	}
 
 	public void saveRituals() {
+		if (ritualConfig == null)
+			return;
+
 		if (ritualConfig.getConfigurationSection("Rituals") == null)
 			return;
 
@@ -113,7 +139,7 @@ public class Main extends JavaPlugin {
 					&& ritualConfig.getLocation("Rituals." + r.getConfigNumber() + ".Location") == r.getCenter()) {
 
 				ritualConfig.set("Rituals." + r.getConfigNumber() + ".Location", r.getCenter());
-				ritualConfig.set("Rituals." + r.getConfigNumber() + ".Owner", r.getOwner());
+				ritualConfig.set("Rituals." + r.getConfigNumber() + ".Owner", r.getOwner().getUniqueId().toString());
 				ritualConfig.set("Rituals." + r.getConfigNumber() + ".Color", r.getColor());
 				ritualConfig.set("Rituals." + r.getConfigNumber() + ".Network", r.getNetwork());
 				ritualConfig.set("Rituals." + r.getConfigNumber() + ".Name", r.getName());
@@ -144,7 +170,8 @@ public class Main extends JavaPlugin {
 			Boolean showName = ritualConfig.getBoolean("Rituals." + loc + ".Show-Name");
 			String networkName = ritualConfig.getString("Rituals." + loc + ".Network");
 
-			OfflinePlayer ownerName = ritualConfig.getOfflinePlayer("Rituals." + loc + ".Owner");
+			OfflinePlayer ownerName = Bukkit
+					.getOfflinePlayer(UUID.fromString(ritualConfig.getString("Rituals." + loc + ".Owner")));
 
 			ritual.setOwner(ownerName);
 			ritual.setLocations();
@@ -194,6 +221,17 @@ public class Main extends JavaPlugin {
 		if (getConfig().getString(configPath) != null) {
 			String message = ChatColor.translateAlternateColorCodes('&', getConfig().getString(configPath));
 			p.sendMessage(message);
+		}
+	}
+
+	@EventHandler
+	public void update(PlayerJoinEvent e) {
+		if (getConfig().isSet("Update-Check") && getConfig().getBoolean("Update-Check") == true && e.getPlayer().isOp()
+				&& !getDescription().getVersion().equals(newupdate)) {
+			e.getPlayer()
+					.sendMessage(ChatColor.translateAlternateColorCodes('&',
+							"&cTeleportation Rituals: &fAn update has been found. Please download version&c " + newupdate
+									+ ", &fyou are on version&c " + getDescription().getVersion() + "!"));
 		}
 	}
 }

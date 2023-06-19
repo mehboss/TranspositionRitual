@@ -250,7 +250,7 @@ public class RitualManager implements Listener {
 		if (action.equals("remove")) {
 			ritual.clearStands();
 
-			if (ritual.getOwner().getUniqueId() != p.getUniqueId() && !(p.hasPermission("tf.remove.others"))) {
+			if (ritual.getOwner().getUniqueId() != p.getUniqueId() && !(p.hasPermission("tr.remove.others"))) {
 				// if not owner of ritual (aka only breaks it or unlites candle) and no
 				// permission to remove other players rituals then simply deactivate it
 				if (ritual.isActive())
@@ -271,7 +271,7 @@ public class RitualManager implements Listener {
 		} else if (action.equals("create")) {
 			getRituals().put(ritual.getCenter(), ritual);
 			ritualConfig().set("Rituals." + ritual.getConfigNumber() + ".Location", ritual.getCenter());
-			ritualConfig().set("Rituals." + ritual.getConfigNumber() + ".Owner", ritual.getOwner().getUniqueId());
+			ritualConfig().set("Rituals." + ritual.getConfigNumber() + ".Owner", ritual.getOwner().getUniqueId().toString());
 			saveRitualConfig();
 			ritualList(ritual, "add");
 		}

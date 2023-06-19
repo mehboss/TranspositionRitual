@@ -17,3 +17,4 @@ Teleporting: '&aTeleporting in %seconds%.. please wait.'
 Ritual-Timeout: 20 # in seconds
 Teleport-Delay: 6 # in seconds
 Debug: false
+Update-Check: true
