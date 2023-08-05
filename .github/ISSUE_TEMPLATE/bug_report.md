@@ -52,7 +52,7 @@ body:
     id: plugin_version
     attributes:
       label: Plugin Version
-      description: What version of tp-rituals are you using?
+      description: What version of TP Rituals are you using?
     validations:
       required: true
   - type: dropdown
@@ -71,7 +71,7 @@ body:
       label: Issue Confirmation
       description: Please confirm the following below.
       options:
-        - label: I have downloaded and tried the latest version of tp-rituals and the issue still persists.
+        - label: I have downloaded and tried the latest version of TP Rituals and the issue still persists.
           required: true
         - label: I have provided sufficient information for the issue to be replicated.
           required: true
