@@ -1,38 +1,77 @@
----
-name: Bug report
-about: Create a report to help us improve
-title: ''
-labels: ''
-assignees: ''
-
----
-
-**Describe the bug**
-A clear and concise description of what the bug is.
-
-**To Reproduce**
-Steps to reproduce the behavior:
-1. Go to '...'
-2. Click on '....'
-3. Scroll down to '....'
-4. See error
-
-**Expected behavior**
-A clear and concise description of what you expected to happen.
-
-**Screenshots**
-If applicable, add screenshots to help explain your problem.
-
-**Desktop (please complete the following information):**
- - OS: [e.g. iOS]
- - Browser [e.g. chrome, safari]
- - Version [e.g. 22]
-
-**Smartphone (please complete the following information):**
- - Device: [e.g. iPhone6]
- - OS: [e.g. iOS8.1]
- - Browser [e.g. stock browser, safari]
- - Version [e.g. 22]
-
-**Additional context**
-Add any other context about the problem here.
+name: Bug Report
+description: File a bug report to help us improve!
+labels: ["bug", "unconfirmed"]
+assignees:
+  - Mehboss
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this bug report!
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      placeholder: Tell us what you see!
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What was supposed to happen?
+      placeholder: What is the intended outcome?
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: How do I reproduce this issue?
+      description: "How do you trigger this bug? Please walk us through it step by step."
+      value: |
+        1.
+        2.
+        3.
+        ...
+      render: bash
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant log output
+      placeholder: Please copy and paste any relevant console log output. This will be automatically formatted into code.
+      render: shell
+  - type: input
+    id: server_version
+    attributes:
+      label: Server Version
+      description: What spigot or paper version are you using? (run /version in-game)
+    validations:
+      required: true
+  - type: input
+    id: plugin_version
+    attributes:
+      label: Plugin Version
+      description: What version of tp-rituals are you using?
+    validations:
+      required: true
+  - type: dropdown
+    id: version
+    attributes:
+      label: Server Mode
+      description: Are you running in offline or online mode?
+      options:
+        - Online Mode
+        - Offline Mode
+    validations:
+      required: true
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Issue Confirmation
+      description: Please confirm the following below.
+      options:
+        - label: I have downloaded and tried the latest version of tp-rituals and the issue still persists.
+          required: true
+        - label: I have provided sufficient information for the issue to be replicated.
+          required: true
