@@ -165,9 +165,13 @@ public class Main extends JavaPlugin implements Listener {
 			Ritual ritual = new Ritual(l);
 			PlayerRitual player = new PlayerRitual();
 
-			Color color = ritualConfig.getColor("Rituals." + loc + ".Color");
+			Color color = ritualConfig.isSet("Rituals." + loc + ".Color")
+					? ritualConfig.getColor("Rituals." + loc + ".Color")
+					: Color.WHITE;
 			String ritualName = ritualConfig.getString("Rituals." + loc + ".Name");
-			Boolean showName = ritualConfig.getBoolean("Rituals." + loc + ".Show-Name");
+			Boolean showName = ritualConfig.isSet("Rituals." + loc + ".Show-Name")
+					? ritualConfig.getBoolean("Rituals." + loc + ".Show-Name")
+					: false;
 			String networkName = ritualConfig.getString("Rituals." + loc + ".Network");
 
 			OfflinePlayer ownerName = Bukkit
@@ -230,8 +234,8 @@ public class Main extends JavaPlugin implements Listener {
 				&& !getDescription().getVersion().equals(newupdate)) {
 			e.getPlayer()
 					.sendMessage(ChatColor.translateAlternateColorCodes('&',
-							"&cTeleportation Rituals: &fAn update has been found. Please download version&c " + newupdate
-									+ ", &fyou are on version&c " + getDescription().getVersion() + "!"));
+							"&cTeleportation Rituals: &fAn update has been found. Please download version&c "
+									+ newupdate + ", &fyou are on version&c " + getDescription().getVersion() + "!"));
 		}
 	}
 }

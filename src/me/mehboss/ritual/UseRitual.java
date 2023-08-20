@@ -112,7 +112,7 @@ public class UseRitual implements Listener {
 
 			p.sendMessage(Main.getInstance().getConfig().getString("Teleporting").replaceAll("%seconds%",
 					String.valueOf(Main.getInstance().getConfig().getInt("Teleport-Delay"))));
-			
+
 			spawnEnchantmentParticles(nearbyPlayers, teleportLoc, () -> {
 				plugin.teleportEntities(teleportLoc, difference, p);
 				runLater(newRitual, p, 1L);
@@ -169,7 +169,8 @@ public class UseRitual implements Listener {
 		// ritual isn't even active (somehow got here even though they are inUse
 		// arrayList, probably pointless to have this here)
 
-		if (!(ritual.isActive()) || p.getLocation().distance(ritual.getCenter().clone().add(.5, 0, .5)) >= 2.5) {
+		if (!(ritual.isActive()) || !p.getLocation().getWorld().getUID().equals(ritual.getCenter().getWorld().getUID())
+				|| p.getLocation().distance(ritual.getCenter().clone().add(.5, 0, .5)) >= 2.5) {
 			if (ritual.inUse()) {
 				ritual.clearStands();
 				ritual.setUser(null);

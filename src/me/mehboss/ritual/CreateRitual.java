@@ -127,7 +127,7 @@ public class CreateRitual implements Listener {
 			return;
 		}
 
-		if (playerRitual().get(ritual.getOwner().getUniqueId()).getRitualCenters().isEmpty()
+		if (playerRitual().get(ritual.getOwner().getUniqueId()) == null || playerRitual().get(ritual.getOwner().getUniqueId()).getRitualCenters().isEmpty()
 				|| (ritual.hasNetwork() && getAllNetworks().getRitualsFromNetwork(ritual.getNetwork()).size() <= 1)) {
 			sendMessage(p.getPlayer(), "No-Ritual-Travel");
 			p.setCancelled(true);
