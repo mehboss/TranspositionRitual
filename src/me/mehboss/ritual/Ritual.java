@@ -275,6 +275,10 @@ public class Ritual {
 	public boolean areAllLit() {
 		for (Location loc : this.candles.values()) {
 			BlockData b = loc.getBlock().getBlockData();
+
+			if (b == null || !(b instanceof Candle))
+				return false;
+
 			Candle c = (Candle) b;
 
 			if (!(c.isLit()))

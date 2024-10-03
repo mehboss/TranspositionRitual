@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
@@ -90,7 +91,9 @@ public class UseRitual implements Listener {
 			Location newRitualLoc = new Location(loc.getWorld(), Math.floor(loc.getX()), loc.getY(),
 					Math.floor(loc.getZ()));
 			Location teleportLoc = newRitualLoc.clone().add(.5, 0, .5);
-			Location difference = p.getLocation().clone().subtract(teleportLoc);
+			Location difference = teleportLoc.getWorld().equals(p.getLocation().getWorld())
+					? p.getLocation().clone().subtract(teleportLoc)
+					: teleportLoc;
 			Ritual newRitual = getRituals().get(newRitualLoc);
 
 			if (newRitual.getCenter() == ritual.getCenter())
@@ -110,8 +113,9 @@ public class UseRitual implements Listener {
 				}
 			}
 
-			p.sendMessage(Main.getInstance().getConfig().getString("Teleporting").replaceAll("%seconds%",
-					String.valueOf(Main.getInstance().getConfig().getInt("Teleport-Delay"))));
+			p.sendMessage(ChatColor.translateAlternateColorCodes('&',
+					Main.getInstance().getConfig().getString("Teleporting").replaceAll("%seconds%",
+							String.valueOf(Main.getInstance().getConfig().getInt("Teleport-Delay")))));
 
 			spawnEnchantmentParticles(nearbyPlayers, teleportLoc, () -> {
 				plugin.teleportEntities(teleportLoc, difference, p);
@@ -241,7 +245,7 @@ public class UseRitual implements Listener {
 									center.getY(), center.getZ() - radius + j + 0.5);
 
 							for (Player p : player)
-								p.spawnParticle(Particle.ENCHANTMENT_TABLE, loc, 1);
+								p.spawnParticle(Particle.valueOf(Main.getInstance().particleManager("ENCHANT")), loc, 1);
 						}
 					}
 
@@ -266,7 +270,7 @@ public class UseRitual implements Listener {
 					Location particleLoc = new Location(center.getWorld(), x, loc.getY(), z);
 
 					for (Player p : player)
-						p.spawnParticle(Particle.ENCHANTMENT_TABLE, particleLoc, 1);
+						p.spawnParticle(Particle.valueOf(Main.getInstance().particleManager("ENCHANT")), particleLoc, 1);
 				}
 
 				currentIteration++;

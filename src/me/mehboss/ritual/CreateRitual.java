@@ -99,8 +99,9 @@ public class CreateRitual implements Listener {
 				ritual = saveRitual(loc, p.getPlayer());
 		}
 
-		if (ritual == null || !(ritual.areAllLit()))
+		if (ritual == null || !(ritual.areAllLit())) {
 			return;
+		}
 
 		if (ritual.getOwner().getUniqueId() == p.getPlayer().getUniqueId()
 				&& !(p.getPlayer().hasPermission("tr.use"))) {

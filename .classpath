@@ -6,7 +6,7 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry exported="true" kind="lib" path="C:/Users/timot/Documents/spigot-api-1.19.2-R0.1-20221106.071812-39.jar"/>
-	<classpathentry kind="lib" path="C:/Users/timot/Documents/BungeeCord.jar"/>
+	<classpathentry kind="lib" path="C:/Users/timot/Downloads/Spigot/Spigot-API/target/spigot-api-1.21.1-R0.1-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="C:/Users/timot/Documents/Minecraft Related/Plugins/BungeeCord.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

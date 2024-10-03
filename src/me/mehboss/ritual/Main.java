@@ -238,4 +238,23 @@ public class Main extends JavaPlugin implements Listener {
 									+ newupdate + ", &fyou are on version&c " + getDescription().getVersion() + "!"));
 		}
 	}
+	
+	public String particleManager(String st) {
+	    String version = Bukkit.getBukkitVersion();
+	    String[] parts = version.split("\\.");
+	    
+	    // Parse the major and minor versions
+	    int majorVersion = Integer.parseInt(parts[0]);
+	    int minorVersion = Integer.parseInt(parts[1]);
+	    
+	    // Check if the version is higher than 1.19
+	    if (majorVersion > 1 || (majorVersion == 1 && minorVersion < 20)) {
+	    	if (st.equals("DUST"))
+	    		return "REDSTONE";
+	    	
+	    	if (st.equals("ENCHANT"))
+	    		return "ENCHANTMENT_TABLE";
+	    }
+	    return st;
+	}
 }

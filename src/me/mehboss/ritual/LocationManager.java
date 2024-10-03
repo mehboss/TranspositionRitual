@@ -62,7 +62,7 @@ public class LocationManager {
 			return;
 
 		ritual.setParticle(particleLoc, owner.getRitualCenters().get(i));
-		center.getWorld().spawnParticle(Particle.REDSTONE, particleLoc, 1, dustOptions);
+		center.getWorld().spawnParticle(Particle.valueOf(Main.getInstance().particleManager("DUST")), particleLoc, 1, dustOptions);
 		manageStands(particleLoc, center, ritual, newRituals);
 	}
 
@@ -93,7 +93,7 @@ public class LocationManager {
 			return;
 
 		ritual.setParticle(particleLoc, ritualCenter);
-		center.getWorld().spawnParticle(Particle.REDSTONE, particleLoc, 1, dustOptions);
+		center.getWorld().spawnParticle(Particle.valueOf(Main.getInstance().particleManager("DUST")), particleLoc, 1, dustOptions);
 		manageStands(particleLoc, center, ritual, foundRitual);
 	}
 
@@ -136,8 +136,8 @@ public class LocationManager {
 			DustOptions dustOptions = new DustOptions(Color.WHITE, 1);
 			DustOptions ritualColor = new DustOptions(getRituals().get(blockc).getColor(), 1);
 
-			center.getWorld().spawnParticle(Particle.REDSTONE, particleLoc, 1, dustOptions);
-			center.getWorld().spawnParticle(Particle.REDSTONE, particleLoc, 1, ritualColor);
+			center.getWorld().spawnParticle(Particle.valueOf(Main.getInstance().particleManager("DUST")), particleLoc, 1, dustOptions);
+			center.getWorld().spawnParticle(Particle.valueOf(Main.getInstance().particleManager("DUST")), particleLoc, 1, ritualColor);
 		}
 	}
 

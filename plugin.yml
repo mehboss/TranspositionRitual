@@ -1,6 +1,6 @@
 name: TPRituals
-version: 1.4
-api-version: 1.18
+version: 1.5
+api-version: 1.13
 main: me.mehboss.ritual.Main
 author: mehboss
 description: A custom coded Ritual teleport plugin inspired by Perasha and requested by KittyKit

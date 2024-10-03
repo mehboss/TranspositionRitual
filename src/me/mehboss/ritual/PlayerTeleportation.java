@@ -57,7 +57,7 @@ public class PlayerTeleportation implements Listener {
 		}
 
 		for (Location closestRituals : playerRitual().get(p.getUniqueId()).getRitualCenters()) {
-			Double distance = playerLoc.distance(closestRituals);
+			Double distance = playerLoc.getWorld().equals(closestRituals.getWorld()) ? playerLoc.distance(closestRituals) : 1000000000;
 			closestLocs.add(distance);
 			closestRitual.put(distance, closestRituals);
 		}
