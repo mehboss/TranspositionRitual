@@ -1,11 +1,14 @@
 package me.mehboss.ritual;
 
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Optional;
 import java.util.UUID;
+import java.util.logging.Level;
+
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -14,6 +17,13 @@ import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.inventory.ItemStack;
 
 public class CreateRitual implements Listener {
+
+	ArrayList<ItemStack> createItem = new ArrayList<>();
+	ArrayList<ItemStack> activateItem = new ArrayList<>();
+
+	enum Action {
+		CREATE, ACTIVATE, NONE
+	}
 
 	private RitualManager plugin;
 
@@ -29,29 +39,33 @@ public class CreateRitual implements Listener {
 		if (item == null)
 			return;
 
+		boolean foundItem = false;
+		Action rawAction = Action.NONE;
 		ItemStack itemStack = item.getItemStack();
 		Material type = itemStack.getType();
-		Material newMaterial = null;
-		// convert to itemstack
 
-		for (String material : Main.getInstance().getConfig().getStringList("Drop-Item")) {
-			Optional<XMaterial> rawMaterial = XMaterial.matchXMaterial(material);
-
-			if (!rawMaterial.isPresent())
-				continue;
-
-			if (type == rawMaterial.get().parseMaterial()) {
-				newMaterial = rawMaterial.get().parseMaterial();
-				break;
-			}
+		if (Main.getInstance().createItem.contains(type)) {
+			rawAction = Action.CREATE;
+			foundItem = true;
 		}
-		// get material
 
-		if (newMaterial == null)
+		if (Main.getInstance().activateItem.contains(type)) {
+			rawAction = Action.ACTIVATE;
+			foundItem = true;
+		}
+
+		if (!foundItem)
 			return;
-		
+
+		if (Main.getInstance().getConfig().isConfigurationSection("Seperate-Drop-Items")
+				&& Main.getInstance().getConfig().getBoolean("Seperate-Drop-Items") == false) {
+			rawAction = Action.NONE;
+		}
+
+		final Action actionItem = rawAction;
+
 		plugin.checkGround(item, (landedLocation) -> {
-			handleLandedLocation(p, landedLocation, item);
+			handleLandedLocation(p, landedLocation, item, actionItem);
 		});
 	}
 
@@ -87,31 +101,62 @@ public class CreateRitual implements Listener {
 		return true;
 	}
 
-	void handleLandedLocation(PlayerDropItemEvent p, Location center, Item item) {
+	void handleLandedLocation(PlayerDropItemEvent p, Location center, Item item, Action actionItem) {
 		Location loc = new Location(center.getWorld(), Math.floor(center.getX()), center.getY(),
 				Math.floor(center.getZ()));
 		Ritual ritual = null;
 
 		if (getRituals().containsKey(loc)) {
+			// ritual already exists, continue down code to activate
 			ritual = getRituals().get(loc);
+
 		} else {
-			if (checkCreationLimit(p.getPlayer(), p))
-				ritual = saveRitual(loc, p.getPlayer());
+			// ritual needs to be created
+			if (actionItem == Action.CREATE) {
+				if (checkCreationLimit(p.getPlayer(), p)) {
+					ritual = saveRitual(loc, p.getPlayer());
+					p.getItemDrop().remove();
+				}
+				return;
+			}
 		}
 
-		if (ritual == null || !(ritual.areAllLit())) {
+		if (ritual == null) {
+			
+			if (actionItem == Action.ACTIVATE) {
+				Ritual checkRitual = new Ritual(center);
+				checkRitual.setLocations();
+
+				if (checkRitual.hasCandles()) {
+					// send needs to be created ritual
+					sendMessage(p.getPlayer(), "Not-Created");
+					p.setCancelled(true);
+				}
+			}
 			return;
 		}
+
+		if (!(ritual.areAllLit()))
+			return;
 
 		if (ritual.getOwner().getUniqueId() == p.getPlayer().getUniqueId()
 				&& !(p.getPlayer().hasPermission("tr.use"))) {
 			sendMessage(p.getPlayer(), "No-Use-Perms");
+			p.setCancelled(true);
 			return;
 		}
 		// player does not have permission to use other people' rituals
 		if (ritual.getOwner().getUniqueId() != p.getPlayer().getUniqueId()
 				&& !(p.getPlayer().hasPermission("tr.use.others"))) {
 			sendMessage(p.getPlayer(), "No-Use-Other-Perms");
+			p.setCancelled(true);
+			return;
+		}
+
+		if (actionItem == Action.CREATE) {
+			// send message that ritual has already been created
+			sendMessage(p.getPlayer(), "Already-Created");
+			p.setCancelled(true);
 			return;
 		}
 
@@ -128,7 +173,8 @@ public class CreateRitual implements Listener {
 			return;
 		}
 
-		if (playerRitual().get(ritual.getOwner().getUniqueId()) == null || playerRitual().get(ritual.getOwner().getUniqueId()).getRitualCenters().isEmpty()
+		if (playerRitual().get(ritual.getOwner().getUniqueId()) == null
+				|| playerRitual().get(ritual.getOwner().getUniqueId()).getRitualCenters().size() < 2
 				|| (ritual.hasNetwork() && getAllNetworks().getRitualsFromNetwork(ritual.getNetwork()).size() <= 1)) {
 			sendMessage(p.getPlayer(), "No-Ritual-Travel");
 			p.setCancelled(true);
@@ -157,7 +203,14 @@ public class CreateRitual implements Listener {
 		getRituals().put(center, ritual);
 
 		if (ritual.hasCandles() && ritual.hasAmounts()) {
-			plugin.findRitual(ritual, null, owner, "create");
+			getRituals().put(ritual.getCenter(), ritual);
+			ritualConfig().set("Rituals." + ritual.getConfigNumber() + ".Location", ritual.getCenter());
+			ritualConfig().set("Rituals." + ritual.getConfigNumber() + ".Owner",
+					ritual.getOwner().getUniqueId().toString());
+			saveRitualConfig();
+
+			plugin.ritualList(ritual, "add");
+			sendMessage(owner.getPlayer(), "Ritual-Created");
 			return ritual;
 		}
 
@@ -178,6 +231,14 @@ public class CreateRitual implements Listener {
 
 	NetworkManager getAllNetworks() {
 		return Main.getInstance().networks;
+	}
+
+	FileConfiguration ritualConfig() {
+		return Main.getInstance().ritualConfig;
+	}
+
+	void saveRitualConfig() {
+		Main.getInstance().saveCustomYml(Main.getInstance().ritualConfig, Main.getInstance().ritualYml);
 	}
 
 	void sendMessage(Player p, String configPath) {

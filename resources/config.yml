@@ -1,6 +1,10 @@
-Drop-Item:
-  - ENDER_PEARL
+Create-Item:
   - AMETHYST_SHARD
+Activate-Item:
+  - ENDER_PEARL
+Seperate-Drop-Items: true
+Not-Created: '&cYou must create the ritual before activating it!'
+Ritual-Created: '&aRitual has successfully been created!'
 Not-While-Using: '&cYou can not do this while you are using a Ritual!'
 No-Create-Perms: '&cYou do not have permission to create rituals!'
 No-Use-Perms: '&cYou do not have permission to use rituals!'
@@ -10,6 +14,7 @@ No-Ritual-Travel: '&cThis ritual does not have any rituals to travel to!'
 Hit-Creation-Limit: '&cYou have the max number of rituals! You must remove one first.'
 Activate-Ritual: '&aSuccessfully activated ritual!'
 Already-Active: '&cThis ritual is already active!'
+Already-Created: '&aThis ritual has already been created! You must activate it instead!'
 Already-Using: '&cYou can only use one ritual at a time!'
 Deactivated-Ritual: '&cSuccessfully deactivated ritual'
 Removed-Ritual: '&cSuccessfully removed ritual'

@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.logging.Level;
@@ -17,6 +18,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -25,6 +27,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import com.cryptomorin.xseries.XMaterial;
 
 public class Main extends JavaPlugin implements Listener {
 
@@ -40,6 +44,9 @@ public class Main extends JavaPlugin implements Listener {
 	HashMap<Player, Location> inUse = new HashMap<Player, Location>();
 	ArrayList<Player> awaitingTeleport = new ArrayList<>();
 
+	ArrayList<Material> createItem = new ArrayList<>();
+	ArrayList<Material> activateItem = new ArrayList<>();
+
 	File ritualYml = new File(getDataFolder() + "/rituals.yml");
 	FileConfiguration ritualConfig = null;
 	File debugFile = null;
@@ -48,6 +55,38 @@ public class Main extends JavaPlugin implements Listener {
 	public void onEnable() {
 		RitualManager rm = new RitualManager(new LocationManager());
 		instance = this;
+
+		try {
+			if (getConfig().getStringList("Create-Item") != null)
+				for (String material : getConfig().getStringList("Create-Item")) {
+					Optional<XMaterial> rawMaterial = XMaterial.matchXMaterial(material);
+
+					if (!rawMaterial.isPresent()) {
+						printException(material, "Create-Item");
+						continue;
+					}
+
+					createItem.add(rawMaterial.get().parseMaterial());
+				}
+
+			for (String material : getConfig().getStringList("Activate-Item")) {
+				Optional<XMaterial> rawMaterial = XMaterial.matchXMaterial(material);
+
+				if (!rawMaterial.isPresent()) {
+					printException(material, "Activate-Item");
+					continue;
+				}
+
+				activateItem.add(rawMaterial.get().parseMaterial());
+			}
+		} catch (Exception e) {
+			getLogger().log(Level.SEVERE,
+					"Failed to register activation items! Missing important configuration section 'Activate-Item'");
+		}
+
+		if (activateItem.isEmpty() && createItem.isEmpty())
+			getLogger().log(Level.SEVERE,
+					"No drop items were found! Please make sure you have placed items in the 'Activate-Item' and/or the 'Create-Item' sections!");
 
 		Bukkit.getPluginManager().registerEvents(this, this);
 		Bukkit.getPluginManager().registerEvents(rm, this);
@@ -100,6 +139,11 @@ public class Main extends JavaPlugin implements Listener {
 	@Override
 	public void onDisable() {
 		saveRituals();
+	}
+
+	public void printException(String material, String action) {
+		getLogger().log(Level.SEVERE,
+				"Material " + material.toUpperCase() + " in config section " + action + " not found. Skipping..");
 	}
 
 	public void saveCustomYml(FileConfiguration ymlConfig, File ymlFile) {
@@ -222,10 +266,14 @@ public class Main extends JavaPlugin implements Listener {
 	}
 
 	public void sendMessage(Player p, String configPath) {
-		if (getConfig().getString(configPath) != null) {
-			String message = ChatColor.translateAlternateColorCodes('&', getConfig().getString(configPath));
-			p.sendMessage(message);
+		if (getConfig().getString(configPath) == null) {
+			getLogger().log(Level.SEVERE,
+					"Failed to send message to " + p.getName() + ". Missing config path " + configPath);
+			return;
 		}
+
+		String message = ChatColor.translateAlternateColorCodes('&', getConfig().getString(configPath));
+		p.sendMessage(message);
 	}
 
 	@EventHandler
@@ -238,23 +286,23 @@ public class Main extends JavaPlugin implements Listener {
 									+ newupdate + ", &fyou are on version&c " + getDescription().getVersion() + "!"));
 		}
 	}
-	
+
 	public String particleManager(String st) {
-	    String version = Bukkit.getBukkitVersion();
-	    String[] parts = version.split("\\.");
-	    
-	    // Parse the major and minor versions
-	    int majorVersion = Integer.parseInt(parts[0]);
-	    int minorVersion = Integer.parseInt(parts[1]);
-	    
-	    // Check if the version is higher than 1.19
-	    if (majorVersion > 1 || (majorVersion == 1 && minorVersion < 20)) {
-	    	if (st.equals("DUST"))
-	    		return "REDSTONE";
-	    	
-	    	if (st.equals("ENCHANT"))
-	    		return "ENCHANTMENT_TABLE";
-	    }
-	    return st;
+		String version = Bukkit.getBukkitVersion();
+		String[] parts = version.split("\\.");
+
+		// Parse the major and minor versions
+		int majorVersion = Integer.parseInt(parts[0]);
+		int minorVersion = Integer.parseInt(parts[1]);
+
+		// Check if the version is higher than 1.19
+		if (majorVersion == 1 && minorVersion >= 20) {
+			if (st.equals("DUST"))
+				return "REDSTONE";
+
+			if (st.equals("ENCHANT"))
+				return "ENCHANTMENT_TABLE";
+		}
+		return st;
 	}
 }

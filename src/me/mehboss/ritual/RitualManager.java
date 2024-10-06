@@ -268,12 +268,6 @@ public class RitualManager implements Listener {
 			sendMessage(p, "Removed-Ritual");
 			ritualList(ritual, "remove");
 
-		} else if (action.equals("create")) {
-			getRituals().put(ritual.getCenter(), ritual);
-			ritualConfig().set("Rituals." + ritual.getConfigNumber() + ".Location", ritual.getCenter());
-			ritualConfig().set("Rituals." + ritual.getConfigNumber() + ".Owner", ritual.getOwner().getUniqueId().toString());
-			saveRitualConfig();
-			ritualList(ritual, "add");
 		}
 	}
 
