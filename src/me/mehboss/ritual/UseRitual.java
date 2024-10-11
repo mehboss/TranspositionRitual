@@ -22,6 +22,8 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
+import com.cryptomorin.xseries.XSound;
+
 public class UseRitual implements Listener {
 
 	private RitualManager plugin;
@@ -71,7 +73,7 @@ public class UseRitual implements Listener {
 
 		Player p = e.getPlayer();
 
-		if (!(inUse().containsKey(p)) || checkLocation(p) || awaitingTeleport().contains(p))
+		if (!(inUse().containsKey(p)) || awaitingTeleport().contains(p))
 			return;
 
 		if (e.getRightClicked() == null || e.getRightClicked().getType() != EntityType.ARMOR_STAND)
@@ -83,6 +85,11 @@ public class UseRitual implements Listener {
 		if (!(ritual.isActive()) || ritual.getParticles() == null || ritual.getUser().getPlayer() != e.getPlayer()
 				|| !(ritual.canTeleport()))
 			return;
+
+		if (checkLocation(p)) {
+			sendMessage(p, "Not-In-Middle");
+			return;
+		}
 
 		Location punchLocation = e.getRightClicked().getLocation();
 
@@ -101,8 +108,8 @@ public class UseRitual implements Listener {
 
 			Long delay = Main.getInstance().getConfig().getLong("Teleport-Delay");
 
-			p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_CHIME, 1, 2);
-			p.playSound(p.getLocation(), Sound.BLOCK_PORTAL_TRIGGER, 1, 1);
+			p.playSound(p.getLocation(), XSound.valueOf("BLOCK_NOTE_BLOCK_CHIME").parseSound(), 1, 2);
+			p.playSound(p.getLocation(), XSound.valueOf("BLOCK_PORTAL_TRIGGER").parseSound(), 1, 1);
 
 			ArrayList<Player> nearbyPlayers = new ArrayList<>();
 			nearbyPlayers.add(p.getPlayer());
@@ -178,7 +185,7 @@ public class UseRitual implements Listener {
 			if (ritual.inUse()) {
 				ritual.clearStands();
 				ritual.setUser(null);
-				p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_BIT, 1, 2);
+				p.playSound(p.getLocation(), XSound.valueOf("BLOCK_NOTE_BLOCK_BIT").parseSound(), 1, 2);
 			}
 			return;
 		}
@@ -187,9 +194,9 @@ public class UseRitual implements Listener {
 			return;
 		}
 
-		p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_CHIME, 1, 2);
+		p.playSound(p.getLocation(), XSound.valueOf("BLOCK_NOTE_BLOCK_CHIME").parseSound(), 1, 2);
 		if (!(ritual.inUse())) {
-			p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_CHIME, 1, 2);
+			p.playSound(p.getLocation(), XSound.valueOf("BLOCK_NOTE_BLOCK_CHIME").parseSound(), 1, 2);
 			ritual.setUser(p);
 		}
 	}
@@ -245,7 +252,8 @@ public class UseRitual implements Listener {
 									center.getY(), center.getZ() - radius + j + 0.5);
 
 							for (Player p : player)
-								p.spawnParticle(Particle.valueOf(Main.getInstance().particleManager("ENCHANT")), loc, 1);
+								p.spawnParticle(Particle.valueOf(Main.getInstance().particleManager("ENCHANT")), loc,
+										1);
 						}
 					}
 
@@ -270,12 +278,19 @@ public class UseRitual implements Listener {
 					Location particleLoc = new Location(center.getWorld(), x, loc.getY(), z);
 
 					for (Player p : player)
-						p.spawnParticle(Particle.valueOf(Main.getInstance().particleManager("ENCHANT")), particleLoc, 1);
+						p.spawnParticle(Particle.valueOf(Main.getInstance().particleManager("ENCHANT")), particleLoc,
+								1);
 				}
 
 				currentIteration++;
 			}
 		}.runTaskTimer(Main.getInstance(), 0, 2L);
+	}
+
+	public void sendMessage(Player p, String configPath) {
+		if (Main.getInstance().getConfig().getString(configPath) != null) {
+			p.sendMessage(ChatColor.translateAlternateColorCodes('&', Main.getInstance().getConfig().getString(configPath)));
+		}
 	}
 
 	HashMap<Location, Ritual> getRituals() {
@@ -288,9 +303,5 @@ public class UseRitual implements Listener {
 
 	ArrayList<Player> awaitingTeleport() {
 		return Main.getInstance().awaitingTeleport;
-	}
-
-	void sendMessage(Player p, String configPath) {
-		Main.getInstance().sendMessage(p, configPath);
 	}
 }

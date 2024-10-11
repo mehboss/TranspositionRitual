@@ -3,6 +3,7 @@ package me.mehboss.ritual;
 import java.util.HashMap;
 import java.util.UUID;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Particle;
@@ -16,6 +17,7 @@ public class LocationManager {
 	void manageStands(Location particleLoc, Location center, Ritual ritual, Ritual newRitual) {
 		if (!(ritual.hasArmorStand(particleLoc.clone().subtract(0, 1, 0)))) {
 
+			String defaultTitle = ChatColor.translateAlternateColorCodes('&', Main.getInstance().defaultTitle);
 			Entity e = center.getWorld().spawnEntity(particleLoc.clone().subtract(0, 1, 0), EntityType.ARMOR_STAND);
 			ArmorStand stand = (ArmorStand) e;
 			stand.setVisible(false);
@@ -27,9 +29,9 @@ public class LocationManager {
 				ritual.setArmorStand(e.getLocation(), e);
 
 				if (!(newRitual.hasName()) || !(newRitual.hasShowName()))
-					stand.setCustomName("(here)");
+					stand.setCustomName(defaultTitle);
 				else
-					stand.setCustomName(newRitual.getName() + " (here)");
+					stand.setCustomName(newRitual.getName() + " " + defaultTitle);
 
 				stand.setCustomNameVisible(true);
 				return;

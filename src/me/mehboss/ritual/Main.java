@@ -38,6 +38,8 @@ public class Main extends JavaPlugin implements Listener {
 	Boolean uptodate = true;
 	String newupdate = null;
 
+	String defaultTitle = ChatColor.translateAlternateColorCodes('&', "(here)");
+	
 	NetworkManager networks = new NetworkManager();
 	HashMap<Location, Ritual> rituals = new HashMap<Location, Ritual>();
 	HashMap<UUID, PlayerRitual> owner = new HashMap<UUID, PlayerRitual>();
@@ -83,6 +85,9 @@ public class Main extends JavaPlugin implements Listener {
 			getLogger().log(Level.SEVERE,
 					"Failed to register activation items! Missing important configuration section 'Activate-Item'");
 		}
+		
+		if (getConfig().getString("Using-Title") != null)
+			defaultTitle = getConfig().getString("Using-Title");
 
 		if (activateItem.isEmpty() && createItem.isEmpty())
 			getLogger().log(Level.SEVERE,
@@ -288,21 +293,31 @@ public class Main extends JavaPlugin implements Listener {
 	}
 
 	public String particleManager(String st) {
-		String version = Bukkit.getBukkitVersion();
-		String[] parts = version.split("\\.");
+		String version = Bukkit.getServer().getBukkitVersion();
+		// Example version: 1.14-R0.1-SNAPSHOT
+		int minorVersion = -1;
 
-		// Parse the major and minor versions
-		int majorVersion = Integer.parseInt(parts[0]);
-		int minorVersion = Integer.parseInt(parts[1]);
+		// Split by "-" to get the version part before the hyphen
+		String[] parts = version.split("-");
+		if (parts.length > 0) {
+			String[] version_parts = parts[0].split("\\.");
+			try {
+				if (version_parts.length > 1)
+					minorVersion = Integer.parseInt(version_parts[1]);
+			} catch (NumberFormatException e) {
+				Main.getInstance().getLogger().log(Level.WARNING,
+						"Error parsing version numbers from server: " + version);
+			}
 
-		// Check if the version is higher than 1.19
-		if (majorVersion == 1 && minorVersion >= 20) {
-			if (st.equals("DUST"))
-				return "REDSTONE";
+			if (minorVersion != -1 && minorVersion >= 20) {
+				if (st.equals("DUST"))
+					return "REDSTONE";
 
-			if (st.equals("ENCHANT"))
-				return "ENCHANTMENT_TABLE";
+				if (st.equals("ENCHANT"))
+					return "ENCHANTMENT_TABLE";
+			}
 		}
+
 		return st;
 	}
 }

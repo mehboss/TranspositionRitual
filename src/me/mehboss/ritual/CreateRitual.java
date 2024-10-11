@@ -115,7 +115,9 @@ public class CreateRitual implements Listener {
 			if (actionItem == Action.CREATE) {
 				if (checkCreationLimit(p.getPlayer(), p)) {
 					ritual = saveRitual(loc, p.getPlayer());
-					p.getItemDrop().remove();
+					
+					if (ritual != null)
+						p.getItemDrop().remove();
 				}
 				return;
 			}
@@ -200,8 +202,6 @@ public class CreateRitual implements Listener {
 		ritual.setColor(Color.WHITE);
 		ritual.setConfigNumber(configNumber);
 
-		getRituals().put(center, ritual);
-
 		if (ritual.hasCandles() && ritual.hasAmounts()) {
 			getRituals().put(ritual.getCenter(), ritual);
 			ritualConfig().set("Rituals." + ritual.getConfigNumber() + ".Location", ritual.getCenter());
@@ -211,6 +211,7 @@ public class CreateRitual implements Listener {
 
 			plugin.ritualList(ritual, "add");
 			sendMessage(owner.getPlayer(), "Ritual-Created");
+			
 			return ritual;
 		}
 

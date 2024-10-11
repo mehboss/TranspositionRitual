@@ -3,8 +3,10 @@ Create-Item:
 Activate-Item:
   - ENDER_PEARL
 Seperate-Drop-Items: true
+Using-Title: '&c(here)'
 Not-Created: '&cYou must create the ritual before activating it!'
 Ritual-Created: '&aRitual has successfully been created!'
+Not-In-Middle: '&cYou must be in the center of the ritual to teleport!'
 Not-While-Using: '&cYou can not do this while you are using a Ritual!'
 No-Create-Perms: '&cYou do not have permission to create rituals!'
 No-Use-Perms: '&cYou do not have permission to use rituals!'

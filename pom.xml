@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>TranspositionRitual</groupId>
   <artifactId>TranspositionRitual</artifactId>
-  <version>1.6</version>
+  <version>1.7</version>
 	<build>
 		<sourceDirectory>src</sourceDirectory>
 		<resources>
@@ -50,7 +50,6 @@
 								<exclude>com/cryptomorin/xseries/XEntityType*</exclude>
 								<exclude>com/cryptomorin/xseries/XItemStack*</exclude>
 								<exclude>com/cryptomorin/xseries/XWorldBorder*</exclude>
-								<exclude>com/cryptomorin/xseries/XSound*</exclude>
 								<exclude>com/cryptomorin/xseries/XTag*</exclude>
 								<exclude>com/cryptomorin/xseries/NMSExtras*</exclude>
 								<exclude>com/cryptomorin/xseries/NoteBlockMusic*</exclude>
