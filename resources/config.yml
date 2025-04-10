@@ -2,8 +2,12 @@ Create-Item:
   - AMETHYST_SHARD
 Activate-Item:
   - ENDER_PEARL
+Locked-Networks:
+  ModNetwork: none
+  AdminNetwork: tpritual.adminnetwork
 Seperate-Drop-Items: true
 Using-Title: '&c(here)'
+Locked-Network-Deny: '&cYou can not use this network - insufficient perms'
 Not-Created: '&cYou must create the ritual before activating it!'
 Ritual-Created: '&aRitual has successfully been created!'
 Not-In-Middle: '&cYou must be in the center of the ritual to teleport!'

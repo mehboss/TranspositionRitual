@@ -20,6 +20,7 @@ import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -39,13 +40,13 @@ public class Main extends JavaPlugin implements Listener {
 	String newupdate = null;
 
 	String defaultTitle = ChatColor.translateAlternateColorCodes('&', "(here)");
-	
+
 	NetworkManager networks = new NetworkManager();
+	HashMap<String, String> lockedNetworks = new HashMap<String, String>();
 	HashMap<Location, Ritual> rituals = new HashMap<Location, Ritual>();
 	HashMap<UUID, PlayerRitual> owner = new HashMap<UUID, PlayerRitual>();
 	HashMap<Player, Location> inUse = new HashMap<Player, Location>();
 	ArrayList<Player> awaitingTeleport = new ArrayList<>();
-
 	ArrayList<Material> createItem = new ArrayList<>();
 	ArrayList<Material> activateItem = new ArrayList<>();
 
@@ -55,9 +56,20 @@ public class Main extends JavaPlugin implements Listener {
 
 	@Override
 	public void onEnable() {
+
+		if (getConfig().isConfigurationSection("Locked-Networks")) {
+			ConfigurationSection section = getConfig().getConfigurationSection("Locked-Networks");
+			for (String key : section.getKeys(false)) {
+				String value = section.getString(key);
+				if (value != null) {
+					lockedNetworks.put(key.toLowerCase(), value.toLowerCase());
+				}
+			}
+		}
+
 		RitualManager rm = new RitualManager(new LocationManager());
 		instance = this;
-
+		
 		try {
 			if (getConfig().getStringList("Create-Item") != null)
 				for (String material : getConfig().getStringList("Create-Item")) {
@@ -85,7 +97,7 @@ public class Main extends JavaPlugin implements Listener {
 			getLogger().log(Level.SEVERE,
 					"Failed to register activation items! Missing important configuration section 'Activate-Item'");
 		}
-		
+
 		if (getConfig().getString("Using-Title") != null)
 			defaultTitle = getConfig().getString("Using-Title");
 
@@ -208,6 +220,13 @@ public class Main extends JavaPlugin implements Listener {
 
 		for (String loc : ritualConfig.getConfigurationSection("Rituals").getKeys(false)) {
 			Location oldl = ritualConfig.getLocation("Rituals." + loc + ".Location");
+			
+			if (oldl == null) {
+				System.out.println("Could not find location for: " + loc + " (Does the world exist?)");
+				System.out.println("Skipping..");
+				continue;
+			}
+			
 			Location l = new Location(oldl.getWorld(), Math.floor(oldl.getX()), Math.floor(oldl.getY()),
 					Math.floor(oldl.getZ()));
 

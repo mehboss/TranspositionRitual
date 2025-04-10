@@ -3,8 +3,6 @@ package me.mehboss.ritual;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
-import java.util.logging.Level;
-
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Material;

@@ -70,6 +70,27 @@ public class RitualManager implements Listener {
 		Ritual ritual = getRituals().get(frameLoc);
 		String networkName = iteminHand.getItemMeta().getDisplayName();
 
+		HashMap<String, String> lockedNetworks = Main.getInstance().lockedNetworks;
+		String lowerName = networkName.toLowerCase();
+
+		if (lockedNetworks.containsKey(lowerName)) {
+			String permission = lockedNetworks.get(lowerName);
+
+			if (permission.equalsIgnoreCase("none")) {
+				if (!p.isOp()) {
+					sendMessage(p, "Locked-Network-Deny");
+					e.setCancelled(true);
+					return;
+				}
+			} else {
+				if (!p.hasPermission(permission)) {
+					sendMessage(p, "Locked-Network-Deny");
+					e.setCancelled(true);
+					return;
+				}
+			}
+		}
+
 		getAllNetworks().createNetwork(networkName);
 		getAllNetworks().addRitualToNetwork(networkName, ritual.getCenter());
 		ritual.setNetwork(networkName);
